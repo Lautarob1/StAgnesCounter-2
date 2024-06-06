@@ -6,9 +6,15 @@
 //
 
 import SwiftUI
+import Firebase
 
 @main
 struct StAgnesCounterApp: App {
+    init() {
+        FirebaseApp.configure()
+        print("configured Firebase!!")
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
