@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ComboBoxView: View {
-    @EnvironmentObject var DataManager: DataManager
 //    @Binding var todayMasses: [(num: String, timeMass: String)]
 //    @Binding var allUshers: [String]
 //    @Binding var usher: String

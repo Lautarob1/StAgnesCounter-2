@@ -35,6 +35,10 @@ struct TestConnecView: View {
 //            addUsersRecursivelyWithDelay(userList, delaySeconds: 2)
           
         }
+        Button("Query Mass DataBase") {
+            fetchDateMasses(date: Date())
+        }
+        .padding(.vertical, 30)
     }
     
     func addUser(userFirst: String, userLast: String) {

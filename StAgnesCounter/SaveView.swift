@@ -10,13 +10,16 @@ import SwiftUI
 struct SaveView: View {
     @Environment(\.presentationMode) var presentationMode
     @Binding var count: Int
-    @State var todayMasses = ["1 - 8:30 AM", "2 - 10:00 AM", "3 - 11:30 AM", "4 - 1:00 PM", "5 - 7:00 PM"]
-    @ObservedObject var dataManager = DataManager()
-    @State var mass: String
-    @State private var allUshers: [String] = ["Soraya", "Amelita", "Joaquin", "Jose Felix", "Gonzalo", "Reinaldo"]
-
+    @ObservedObject var todayMass = TodayMass()
+    @ObservedObject var ushers = Ushers()
+    @State var mass: String = ""
+    @State var strMass: String = ""
+    @State var todayString: String = ""
     let pickerLabel: String = "select mass"
     @State private var usher: String = ""
+    @State private var showingConfirmation = false
+    @State private var activateSave = false
+    
     
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -25,6 +28,7 @@ struct SaveView: View {
     }()
     var calendar = Calendar.current
     let currentDate = Date()
+    @State private var selectedUsher = ""
 
 //    var massAttendance: Int
 
@@ -32,17 +36,13 @@ struct SaveView: View {
         NavigationView {
             
             VStack(spacing: 20) {
-//                if let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) {
-//                    Text("Next date (one day later): \(nextDate)")
-//                } else {
-//                    Text("Failed to calculate next date.")
-//                }
+                Text("Select Mass time and Usher and the submission button will appear")
                 Text("\(formattedDate(with: "EEEE, MMMM d, yyyy"))")
-//                Text("Second Format: \(formattedDate(with: "EEEE MM/dd/yyyy h:mm a"))")
+                
                 HStack {
                     Text("Mass time")
                     Picker(pickerLabel, selection: $mass) {
-                        ForEach(todayMasses, id: \.self) { option in
+                        ForEach(TodayMass.shared.todayMasses, id: \.self) { option in
                             Text(option)
                         }
                     }
@@ -50,28 +50,51 @@ struct SaveView: View {
                 
                 HStack {
                     Text("Usher ")
-                    Picker("Usher", selection: $usher) {
-                        ForEach(allUshers, id: \.self) { option in
-                            Text(option)
-                            //                    ComboBoxView(pickerLabel: "select", toggleLabel: "Usher")
+                    Picker("Usher", selection: $selectedUsher) {
+                        ForEach(Ushers.shared.allUshers, id: \.id) { usher in
+                            Text("\(usher.first) \(usher.last)").tag(usher.id)
                         }
-                        
-                        
-                        Text("Save the count")
-                            .font(.headline)
-                        
-                        Text("head count: \(count)")
-                            .font(.title)
-                        
-                        Button("Save Attendance") {
-                            saveCount()
-                        }
-                        .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .clipShape(Capsule())
                     }
-                    .navigationTitle("Save Count")
+                }
+                Text("--------------------------")
+                    .font(.headline)
+                
+                Text("Attendance count: \(count)")
+                    .font(.title)
+                if mass != "" && count > 0 && selectedUsher != "" {
+                    Button("Save Attendance") {
+                        print(todayMass)
+                        saveCount()
+                    }
+                    .padding()
+                    .background(Color.red)
+                    .foregroundColor(.white)
+                    .clipShape(Capsule())
+ 
+                }
+                if TodayMass.shared.alreadyUpdate {
+                Text("Count already uploaded. Use Update if needed")
+                }
+                if showingConfirmation {
+                    var selectedUsherName: String {
+                            guard let usher = Ushers.shared.allUshers.first(where: { $0.id == selectedUsher }) else {
+                                return "No Usher Selected"
+                            }
+                            return "\(usher.first) \(usher.last)"
+                        }
+                    
+                    ConfirmationDialogView (value1: todayString, value2: mass, value3: selectedUsherName, value4: String(count), onConfirm: {
+                        updateDailyMassFields2(docID: strMass, headUsher: selectedUsher, attendants: count){ result in
+                            print(result)}
+                        print(" here: \(TodayMass.shared.alreadyUpdate)")
+                        showingConfirmation = false
+                        
+                    }, onCancel: {
+                        showingConfirmation = false
+                    })
+                 }
+            }
+                    .navigationTitle("Count - Regular Mass")
                     .navigationBarItems(trailing: Button("Done") {
                         self.presentationMode.wrappedValue.dismiss()
                     })
@@ -82,10 +105,17 @@ struct SaveView: View {
                     .padding()
                 }
             }
-        }
-    }
+        
     func saveCount() {
-        DataManager.shared.massAttend = count
+        TodayMass.shared.massAttend = count
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        todayString = dateFormatter.string(from: Date())
+
+        
+        showingConfirmation = true
+        print("StrMass: \(strMass)")
+
         // Here you would include the logic to save the count
         // For example, writing to UserDefaults, a database, or sending to a server
         print("Saving count: \(count)")
@@ -101,9 +131,33 @@ struct SaveView: View {
         }
 }
 
+struct UsherPickerView: View {
+    @StateObject private var viewModel = UserViewModel()
+    @State private var selectedUser: User?
 
+    var body: some View {
+        VStack {
+            Picker("Select User", selection: $selectedUser) {
+                ForEach(viewModel.users) { user in
+                    Text("\(user.first) \(user.last)")
+                        .tag(user as User?)
+                }
+            }
+            .pickerStyle(WheelPickerStyle())  // Customize this style as needed
+            .padding()
+
+            if let selectedUser = selectedUser {
+                Text("Selected User: \(selectedUser.first) \(selectedUser.last)")
+                    .padding()
+            } else {
+                Text("No User Selected")
+                    .padding()
+            }
+        }
+    }
+}
 
 
 #Preview {
-    SaveView(count: .constant(12), mass: "mass")
+    SaveView(count: .constant(115), mass: "mass", strMass: "2024-01-01 [1] 8:00 AM")
 }

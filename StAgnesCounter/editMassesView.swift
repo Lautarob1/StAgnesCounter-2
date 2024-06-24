@@ -9,11 +9,12 @@ import SwiftUI
 
 import FirebaseFirestore
 
-struct testUpdateDailyMassView: View {
+struct editMasses: View {
     @State private var selectedDate = Date()
     @State private var masses: [DailyMass] = []
     @State private var addingMassTime: String = ""
-
+    @State private var isValidTime: Bool = false
+    
     var body: some View {
         NavigationView {
             Form {
@@ -37,9 +38,22 @@ struct testUpdateDailyMassView: View {
                     }
 
                     HStack {
-                        TextField("Add Mass Time", text: $addingMassTime)
-                        Button("Add") {
-                            addMass()
+                    TextField("Add Mass Time", text: $addingMassTime)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .onChange(of: addingMassTime) { newValue in
+                                isValidTime = checkValidTime(time: newValue)
+                            }
+                        HStack {
+                            if !isValidTime {
+                                Text(isValidTime ? "Valid Time" : "Invalid Time")
+                                    .foregroundColor(isValidTime ? .green : .red)
+                                    .padding()
+                            }
+                            if isValidTime {
+                                Button("Add Mass") {
+                                    addMass()
+                                }
+                            }
                         }
                     }
                 }
@@ -63,11 +77,18 @@ struct testUpdateDailyMassView: View {
                     let data = doc.data()
                     let id = doc.documentID
                     let time = String(id.split(separator: "-").last ?? "")
-                    return DailyMass(time: time, attendants: data["attendants"] as? Int ?? 0, headUsher: data["headUsher"] as? String ?? "", language: data["language"] as? String ?? "")
+                    return DailyMass(time: time, attendants: data["attendants"] as? Int ?? 0, headUsher: data["headUsher"] as? String ?? "", language: data["language"] as? String ?? "", type: data["type"] as? String ?? "")
                 }
             }
         }
     }
+    
+    private func checkValidTime(time: String) -> Bool {
+           let timePattern = "^(1[0-2]|0?[1-9]):([0-5][0-9]) [AP]M$"
+           let timeRegex = try! NSRegularExpression(pattern: timePattern, options: [])
+           let range = NSRange(location: 0, length: time.utf16.count)
+           return timeRegex.firstMatch(in: time, options: [], range: range) != nil
+       }
 
     private func updateMass(index: Int) {
         let db = Firestore.firestore()
@@ -94,7 +115,8 @@ struct testUpdateDailyMassView: View {
             "time": addingMassTime,
             "attendants": 0,
             "headUsher": "",
-            "language": ""
+            "language": "",
+            "type": ""
         ]) { error in
             if let error = error {
                 print("Error adding document: \(error)")
@@ -125,15 +147,17 @@ struct DailyMass {
     var attendants: Int
     var headUsher: String
     var language: String
+    var type: String
 
-    init(time: String, attendants: Int, headUsher: String, language: String) {
+    init(time: String, attendants: Int, headUsher: String, language: String, type: String) {
         self.time = time
         self.attendants = attendants
         self.headUsher = headUsher
         self.language = language
+        self.type = type
     }
 }
 
 #Preview {
-    testUpdateDailyMassView()
+    editMasses()
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TestFillSchedView: View {
     var body: some View {
-        VStack {
+        VStack (spacing: 20){
             Button("FillSchedule") {
                 populateMassSchedule()
             }
