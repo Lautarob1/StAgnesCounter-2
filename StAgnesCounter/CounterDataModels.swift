@@ -12,7 +12,7 @@ import FirebaseFirestore
 class TodayMass: ObservableObject {
     static let shared = TodayMass()
     //    @Published var todayMasses: [(num: String, timeMass: String)] = []
-    
+    @Published var selectedMass: String = ""
     @Published var todayMasses: [String] = []
     @Published var dateMasses: [String] = []
     @Published var massDetail: [MassDetail] = []
@@ -28,7 +28,6 @@ class TodayMass: ObservableObject {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let todayString = dateFormatter.string(from: Date()) // Formats today's date as "YYYY-MM-DD"
-        
         queryMasses3(for: todayString)
         
     }
@@ -76,13 +75,18 @@ class Ushers: ObservableObject {
     static let shared = Ushers()
     @Published var allUshers: [Usher] = []
     
-    init() {self.ushersInit()}
-    
-    func ushersInit() {
-        queryUshers()
+    init() {
+        self.ushersInit()
     }
     
-    private func queryUshers() {
+    func ushersInit() {
+        Task {
+            await queryUshers3()
+        }
+    }
+    
+    func queryUshers() {
+        print("inside func queryUshers in Ushers class")
         let db = Firestore.firestore()
         db.collection("ushers").getDocuments { (querySnapshot, error) in
             if let error = error {
@@ -90,21 +94,76 @@ class Ushers: ObservableObject {
                 return
             }
             guard let documents = querySnapshot?.documents else { return }
-
+            
             let fetchedUshers = documents.compactMap { document -> Usher? in
-                let data = document.data()
-                guard let firstName = data["u_first"] as? String,
-                      let lastName = data["u_last"] as? String else {
+            let data = document.data()
+                print("data from FB in queryUshers: \(data)")
+            guard let first = data["first"] as? String,
+                  let last = data["last"] as? String,
+                  let phone = data["phone"] as? String
+                else {
+                    print(data["first"] ?? "first: nothing to print")
                     return nil
                 }
                 // Use the document ID as the unique identifier
-//                print(Usher(id: document.documentID, first: firstName, last: lastName))
-                return Usher(id: document.documentID, first: firstName, last: lastName)
+                //                print(Usher(id: document.documentID, first: firstName, last: lastName))
+                return Usher(id: document.documentID, first: first, last: last, phone: phone)
             }
-
+//            print("fetched ushers inside queryUshers \(fetchedUshers)")
             DispatchQueue.main.async {
                 self.allUshers = fetchedUshers
             }
+        }
+    }
+    
+    
+    func queryUshers2() {
+        print(" in query2 func... ")
+        let db = Firestore.firestore()
+        db.collection("ushers").getDocuments { (snapshot, error) in
+            if let error = error {
+                print("Error loading ushers: \(error.localizedDescription)")
+                return
+            }
+            guard let documents = snapshot?.documents else {
+//                print("No documents found")
+                return
+            }
+//            print("Documents count: \(documents.count)")
+            self.allUshers = documents.map { doc in
+                let data = doc.data()
+//                print("data: \(data)")
+                return Usher(
+                    id: doc.documentID,
+                    first: data["first"] as? String ?? "",
+                    last: data["last"] as? String ?? "",
+                    phone: data["phone"] as? String ?? ""
+                )
+            }
+        }
+        print("leaving query2 func... ")
+        print("all ushers \(Ushers.shared.allUshers) ")
+        
+    }
+    
+    func queryUshers3() async {
+        let db = Firestore.firestore()
+        do {
+            let snapshot = try await db.collection("ushers").getDocuments()
+            let ushers = snapshot.documents.map { doc -> Usher in
+                let data = doc.data()
+                return Usher(
+                    id: doc.documentID,
+                    first: data["first"] as? String ?? "",
+                    last: data["last"] as? String ?? "",
+                    phone: data["phone"] as? String ?? ""
+                )
+            }
+            DispatchQueue.main.async {
+                self.allUshers = ushers
+            }
+        } catch {
+            print("Error loading ushers: \(error.localizedDescription)")
         }
     }
 }
@@ -113,11 +172,13 @@ struct Usher: Identifiable, Codable, Hashable {
     var id: String // Use Firestore document ID as the unique identifier
     var first: String
     var last: String
+    var phone: String
     
-    init(id: String, first: String, last: String) {
+    init(id: String, first: String, last: String, phone: String) {
             self.id = id
             self.first = first
             self.last = last
+            self.phone = phone
         }
 }
 
@@ -137,23 +198,6 @@ struct MassDetail: Identifiable, Codable, Hashable {
         }
 }
 
-//@Published var massAttend: Int = 0
-//@Published var headUsher: String = ""
-//@Published var languaje: String = ""
-//@Published var type: String = ""
-
-
-//class Usher: Identifiable, Codable, Hashable {
-//    var id: String
-//    var first: String
-//    var last: String
-//
-//    init(id: String, first: String, last: String) {
-//        self.id = id
-//        self.first = first
-//        self.last = last
-//    }
-//}
 
 
 func fetchTodaysMasses() {
@@ -340,7 +384,9 @@ func updateDailyMassFields(docID: String, headUsher: String, attendants: Int) {
 func updateDailyMassFields2(docID: String, headUsher: String, attendants: Int, completion: @escaping (String) -> Void) {
     // Reference to Firestore
     let db = Firestore.firestore()
-    
+    print("updateDailyMassFields2: docID= \(docID)")
+    print("updateDailyMassFields2: headU= \(headUsher)")
+    print("updateDailyMassFields2: atten= \(attendants)")
     // Reference the specific document by ID
     let docRef = db.collection("dailyMass").document(docID)
     
@@ -372,6 +418,32 @@ func updateDailyMassFields2(docID: String, headUsher: String, attendants: Int, c
             completion("Error getting document: \(error.localizedDescription)")
         } else {
             completion("Document does not exist")
+        }
+    }
+}
+
+
+func addUsher1(userFirst: String, userLast: String, userPh: String) {
+    // Get a reference to the Firestore database
+    let db = Firestore.firestore()
+    
+    // Create a reference to a new document in the "User" collection
+    let newDocRef = db.collection("ushers").document()
+    
+    // Set up the data to be written, including a placeholder for the ID
+    let data: [String: Any] = [
+        "u_first": userFirst,
+        "u_last": userLast,
+        "u_phone": userPh,
+        "creation_date": Timestamp(date: Date()),
+        "id": newDocRef.documentID // Using the document's ID directly
+    ]
+    // Write data to Firestore
+    newDocRef.setData(data) { err in
+        if let err = err {
+            print("Error adding document: \(err)")
+        } else {
+            print("Document successfully added with ID: \(newDocRef.documentID)")
         }
     }
 }

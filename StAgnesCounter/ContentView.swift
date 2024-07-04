@@ -143,6 +143,9 @@ struct ContentView: View {
                                     isActive: $showingSave,
                                     label: {
                                         Button("Save") {
+                                        task {
+                                                await Ushers.shared.queryUshers3()
+                                        }
                                             showingSave = true
                                         }
                                         .frame(width: 100, height: 30)

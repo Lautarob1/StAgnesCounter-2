@@ -15,7 +15,7 @@ struct TestConnecView: View {
 //    FirebaseApp.configure()
 
     let db = Firestore.firestore()
-    let userList = [
+    let usherList = [
         ["Gilberto", "Castro", "305 632 6489"],
         ["Amelita", "Courney", "786 376 5565"],
         ["Fernando", "Echeverri", "305 458 6101"],
@@ -32,7 +32,8 @@ struct TestConnecView: View {
     var body: some View {
         Button("Test Connec") {
 //            addUser1(userFirst: "John", userLast: "Doe", userPh: "786 479 5322")
-//            addUsersRecursivelyWithDelay(userList, delaySeconds: 2)
+// use this to add users to the data base. Update userlist to avoid dups
+            addUshersWithNoDelay(usherList)
           
         }
         Button("Query Mass DataBase") {
@@ -45,8 +46,8 @@ struct TestConnecView: View {
         // Get a reference to the Firestore database
         let db = Firestore.firestore()
         
-        // Create a new document in the "User" collection
-        db.collection("User").addDocument(data: [
+        // Create a new document in the "usher" collection
+        db.collection("ushers").addDocument(data: [
             "user_first": userFirst,
             "user_last": userLast,
             "creation_date": Timestamp(date: Date())
@@ -59,37 +60,14 @@ struct TestConnecView: View {
         }
     }
 
-    func addUser1(userFirst: String, userLast: String, userPh: String) {
-        // Get a reference to the Firestore database
-        let db = Firestore.firestore()
-        
-        // Create a reference to a new document in the "User" collection
-        let newDocRef = db.collection("ushers").document()
-        
-        // Set up the data to be written, including a placeholder for the ID
-        let data: [String: Any] = [
-            "u_first": userFirst,
-            "u_last": userLast,
-            "u_phone": userPh,
-            "creation_date": Timestamp(date: Date()),
-            "id": newDocRef.documentID // Using the document's ID directly
-        ]
-        // Write data to Firestore
-        newDocRef.setData(data) { err in
-            if let err = err {
-                print("Error adding document: \(err)")
-            } else {
-                print("Document successfully added with ID: \(newDocRef.documentID)")
-            }
-        }
-    }
+
     
-    func addUsersRecursively(_ users: [[String]]) {
+    func addUshersRecursively(_ ushers: [[String]]) {
         // Base case: If no more users, end recursion
-        guard !users.isEmpty else { return }
+        guard !ushers.isEmpty else { return }
         
         // Extract the first user's data
-        let currentUser = users[0]
+        let currentUser = ushers[0]
         
         // Ensure the currentUser has three components (first, last, phone)
         guard currentUser.count == 3 else {
@@ -97,38 +75,64 @@ struct TestConnecView: View {
             return
         }
     }
-    func addUsersRecursivelyWithDelay(_ users: [[String]], delaySeconds: TimeInterval) {
-            // Base case: If no more users, end recursion
-            guard !users.isEmpty else { return }
+    func addUshersRecursivelyWithDelay(_ ushers: [[String]], delaySeconds: TimeInterval) {
+            // Base case: If no more ushers, end recursion
+            guard !ushers.isEmpty else { return }
 
             // Extract the first user's data
-            let currentUser = users[0]
+            let currentUsher = ushers[0]
 
             // Ensure the current user has three components (first, last, phone)
-            guard currentUser.count == 3 else {
+            guard currentUsher.count == 3 else {
                 print("Invalid user data format.")
                 return
             }
 
             // Add the current user
-            addUser1(userFirst: currentUser[0], userLast: currentUser[1], userPh: currentUser[2])
+            addUsher1(userFirst: currentUsher[0], userLast: currentUsher[1], userPh: currentUsher[2])
 
             // Recursive call after delay for the remaining users
-            let remainingUsers = Array(users.dropFirst())
+            let remainingUshers = Array(ushers.dropFirst())
             DispatchQueue.global().asyncAfter(deadline: .now() + delaySeconds) {
-                addUsersRecursivelyWithDelay(remainingUsers, delaySeconds: delaySeconds)
+                addUshersRecursivelyWithDelay(remainingUshers, delaySeconds: delaySeconds)
             }
 
         
         // Add the current user
-        addUser1(userFirst: currentUser[0], userLast: currentUser[1], userPh: currentUser[2])
+        addUsher1(userFirst: currentUsher[0], userLast: currentUsher[1], userPh: currentUsher[2])
 
         // Recursive call for the remaining users
 //        let remainingUsers = Array(users.dropFirst())
-        addUsersRecursively(remainingUsers)
+        addUshersRecursively(remainingUshers)
     }
+// worked correctly Jun30. 11 ushers added.
+    func addUshersWithNoDelay(_ ushers: [[String]]) {
+        for usher in usherList {
+            var documentData: [String: Any] = [:]
+            let newDocRef = db.collection("ushers").document()
+            if usher.count == 3 {
+                documentData = [
+                    "first": usher[0],
+                    "last": usher[1],
+                    "phone": usher[2],
+                    "creation_date": Timestamp(date: Date()),
+                    "id": newDocRef.documentID
+                ]
+            }
 
-    
+            // Add a new document in collection "users"
+            db.collection("ushers").addDocument(data: documentData) { error in
+                if let error = error {
+                    print("Error adding document: \(error)")
+                } else {
+                    print("Document added with ID: \(usher[2])")
+                }
+            }
+            print("Document successfully added with ID: \(newDocRef.documentID)")
+        }
+
+        
+    }
     
 }
 

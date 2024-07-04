@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4300754C2C37428200417E5A /* ConfirmationDialogView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4300754B2C37428200417E5A /* ConfirmationDialogView2.swift */; };
 		431AB3542BE5901900DD8825 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 431AB3532BE5901900DD8825 /* GoogleService-Info.plist */; };
 		431AB3582BE6A23100DD8825 /* TestConnecView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431AB3572BE6A23100DD8825 /* TestConnecView.swift */; };
 		431AB35A2BE7147300DD8825 /* testReadFromFirebaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431AB3592BE7147300DD8825 /* testReadFromFirebaseView.swift */; };
@@ -32,11 +33,12 @@
 		43C4D8B02C0FE818006DD83C /* uploadMainMassSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C4D8AF2C0FE818006DD83C /* uploadMainMassSchedule.swift */; };
 		43C4D8B22C0FEA37006DD83C /* TestFillSchedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C4D8B12C0FEA37006DD83C /* TestFillSchedView.swift */; };
 		43C4D8B42C0FFD13006DD83C /* UpdateMassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C4D8B32C0FFD12006DD83C /* UpdateMassView.swift */; };
-		43C4D8B62C11515A006DD83C /* editMassesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C4D8B52C11515A006DD83C /* editMassesView.swift */; };
+		43C4D8B62C11515A006DD83C /* UpdateUsherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C4D8B52C11515A006DD83C /* UpdateUsherView.swift */; };
 		43EACE9A2C2503D5009AB643 /* TestUpdateMassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43EACE992C2503D5009AB643 /* TestUpdateMassView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4300754B2C37428200417E5A /* ConfirmationDialogView2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmationDialogView2.swift; sourceTree = "<group>"; };
 		431AB3532BE5901900DD8825 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		431AB3572BE6A23100DD8825 /* TestConnecView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConnecView.swift; sourceTree = "<group>"; };
 		431AB3592BE7147300DD8825 /* testReadFromFirebaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testReadFromFirebaseView.swift; sourceTree = "<group>"; };
@@ -53,7 +55,7 @@
 		43C4D8AF2C0FE818006DD83C /* uploadMainMassSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = uploadMainMassSchedule.swift; sourceTree = "<group>"; };
 		43C4D8B12C0FEA37006DD83C /* TestFillSchedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFillSchedView.swift; sourceTree = "<group>"; };
 		43C4D8B32C0FFD12006DD83C /* UpdateMassView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateMassView.swift; sourceTree = "<group>"; };
-		43C4D8B52C11515A006DD83C /* editMassesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = editMassesView.swift; sourceTree = "<group>"; };
+		43C4D8B52C11515A006DD83C /* UpdateUsherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUsherView.swift; sourceTree = "<group>"; };
 		43EACE992C2503D5009AB643 /* TestUpdateMassView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUpdateMassView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -101,12 +103,13 @@
 				432FF45F2BD4397500B402DC /* StAgnesCounterApp.swift */,
 				432FF4612BD4397500B402DC /* ContentView.swift */,
 				432FF4712BD58A4E00B402DC /* CounterDataModels.swift */,
-				43C4D8B52C11515A006DD83C /* editMassesView.swift */,
+				43C4D8B52C11515A006DD83C /* UpdateUsherView.swift */,
 				43C4D8B32C0FFD12006DD83C /* UpdateMassView.swift */,
 				432FF46D2BD467A500B402DC /* EditView.swift */,
 				431AB3532BE5901900DD8825 /* GoogleService-Info.plist */,
 				432FF46F2BD46BC900B402DC /* SaveView.swift */,
 				43C279592C27ABF000DE8361 /* ConfirmationDialogView.swift */,
+				4300754B2C37428200417E5A /* ConfirmationDialogView2.swift */,
 				431AB3572BE6A23100DD8825 /* TestConnecView.swift */,
 				43C4D8B12C0FEA37006DD83C /* TestFillSchedView.swift */,
 				431AB3592BE7147300DD8825 /* testReadFromFirebaseView.swift */,
@@ -217,12 +220,13 @@
 			files = (
 				43C4D8B42C0FFD13006DD83C /* UpdateMassView.swift in Sources */,
 				43C4D8B02C0FE818006DD83C /* uploadMainMassSchedule.swift in Sources */,
+				4300754C2C37428200417E5A /* ConfirmationDialogView2.swift in Sources */,
 				432FF4622BD4397500B402DC /* ContentView.swift in Sources */,
 				43C2795A2C27ABF000DE8361 /* ConfirmationDialogView.swift in Sources */,
 				43EACE9A2C2503D5009AB643 /* TestUpdateMassView.swift in Sources */,
 				432FF4722BD58A4E00B402DC /* CounterDataModels.swift in Sources */,
 				432FF4602BD4397500B402DC /* StAgnesCounterApp.swift in Sources */,
-				43C4D8B62C11515A006DD83C /* editMassesView.swift in Sources */,
+				43C4D8B62C11515A006DD83C /* UpdateUsherView.swift in Sources */,
 				432FF46E2BD467A500B402DC /* EditView.swift in Sources */,
 				431AB3582BE6A23100DD8825 /* TestConnecView.swift in Sources */,
 				431AB35A2BE7147300DD8825 /* testReadFromFirebaseView.swift in Sources */,

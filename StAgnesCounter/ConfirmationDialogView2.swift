@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ConfirmationDialogView: View {
+struct ConfirmationDialogView2: View {
     var value0: String
     var value1: String
     var value2: String
@@ -20,22 +20,22 @@ struct ConfirmationDialogView: View {
         VStack(spacing: 20) {
             Text(value0)
             HStack {
-            Text("Date: ")
+            Text("First Name: ")
             Text(value1)
                 .padding(2)
                 }
             HStack {
-            Text("Time: ")
+            Text("Last Name: ")
             Text(value2)
                 .padding(2)
                 }
             HStack {
-            Text("Usher: ")
+            Text("Phone ")
             Text(value3)
                 .padding(4)
                 }
             HStack {
-            Text("Attendance: ")
+            Text("UsherID ")
             Text(value4)
                 .padding(4)
                 }
@@ -66,7 +66,7 @@ struct ConfirmationDialogView: View {
 }
 
 #Preview {
-    ConfirmationDialogView(value0: "confirm what:", value1: "2024-01-01", value2: "[1] 8:00 AM", value3: "John Doe", value4: "150", onConfirm: {
+    ConfirmationDialogView2(value0: "confirm what:", value1: "John", value2: "Doe", value3: "(305) 123 4567", value4: "idxxxxx", onConfirm: {
                print("Confirmed")
            }, onCancel: {
                print("Cancelled")
